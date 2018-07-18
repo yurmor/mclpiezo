@@ -1,12 +1,14 @@
 verbose = False
-from ctypes import c_int, c_uint, c_double
+from ctypes import cdll, c_int, c_uint, c_double
 import atexit
 from time import sleep
 import numpy as np
 
-class madpiezo():
+class Madpiezo():
 	def __init__(self):
-		self.madlib = cdll.LoadLibrary("dll\\piezo\\Madlib.dll")
+		# provide valid path to Madlib.dll. Madlib.h and Madlib.lib should also be in the same folder
+		path_to_dll = 'Madlib.dll'
+		self.madlib = cdll.LoadLibrary(path_to_dll)
 		
 		self.handler = self.mcl_start()
 		atexit.register(self.mcl_close)
@@ -18,7 +20,7 @@ class madpiezo():
 			Returns a valid handle or returns 0 to indicate failure.
 		"""
 		mcl_init_handle = self.madlib['MCL_InitHandle']
-		 
+		
 		mcl_init_handle.restype = c_int
 		handler = mcl_init_handle()
 		if(handler==0):
@@ -70,10 +72,14 @@ class madpiezo():
 		"""
 		mcl_release_all = self.madlib['MCL_ReleaseAllHandles']
 		mcl_release_all()
+
 if __name__ == "__main__":
 	
 	#simple scanning example
 	
+	# intialize the piezo
+	piezo = Madpiezo()
+
 	#will scan over a rectangular area, from (x1, y1) to (x2, y2) 
 	#with len_x steps in x-direction and len_y steps in y-direction
 	
@@ -83,21 +89,26 @@ if __name__ == "__main__":
 	y1, y2 = 0., 16. # y coordinates
 	z_postion = 50. # z position 
 	
+	wait_time = 0.01 # time to wait (seconds) after moving piezo to next position
+
 	#create a 2d grid of x and y scanning positions
 	x_pattern, y_pattern = np.meshgrid(np.linspace(x1, x2, len_x), np.linspace(y1, y2, len_y))
 	scan_shape = np.shape(x_pattern)
 	
-	piezo = madpiezo() # intialize the piezo
+	results = np.zeros(scan_shape) # create array to store the results of the measurements 
 	
-	#go to the origin if the scan
+	#go to the origin of the scan
 	piezo.goxy(x1,y1)
 	piezo.goz(z_postion)
 	
-	
+	# move the piezo over the scan area
 	for index in np.ndindex(scan_shape):
 		# go to the next position
 		piezo.goxy(x_pattern[index],y_pattern[index])
-		# do some measurements here
-		sleep(0.03)
+		sleep(wait_time)
+
+		# do some measurements here by calling measure_something() function and store the result
+		# results(index) = measure_something() 
+		
 		print("Current position x,y,z = ", piezo.get_position())
 	
