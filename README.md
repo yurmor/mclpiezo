@@ -1,2 +1,2 @@
 Simple library to control Mad City Labs piezo stages  
-Tested on MCL Nano-LP200 piezo stage
+Tested with the MCL Nano-LP200 piezo stage
