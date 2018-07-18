@@ -1,4 +1,3 @@
-verbose = False
 from ctypes import cdll, c_int, c_uint, c_double
 import atexit
 from time import sleep
@@ -9,7 +8,6 @@ class Madpiezo():
 		# provide valid path to Madlib.dll. Madlib.h and Madlib.lib should also be in the same folder
 		path_to_dll = 'Madlib.dll'
 		self.madlib = cdll.LoadLibrary(path_to_dll)
-		
 		self.handler = self.mcl_start()
 		atexit.register(self.mcl_close)
 	def mcl_start(self):
@@ -24,9 +22,8 @@ class Madpiezo():
 		mcl_init_handle.restype = c_int
 		handler = mcl_init_handle()
 		if(handler==0):
-			print "MCL init error"
-			return
-		if verbose: print "handler = ", handler
+			print("MCL init error")
+			return -1
 		return 	handler
 	def mcl_read(self,axis_number):
 		"""
@@ -57,7 +54,7 @@ class Madpiezo():
 		error_code = mcl_single_write_n(c_double(position), c_uint(axis_number), c_int(self.handler))
 		
 		if(error_code !=0):
-			print "MCL write error = ", error_code
+			print("MCL write error = ", error_code)
 		return error_code
 	def goxy(self,x_position,y_position):
 		self.mcl_write(x_position,1)
