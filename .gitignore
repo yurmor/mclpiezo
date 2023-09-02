@@ -1,0 +1,6 @@
+*.bak
+*.pyc
+.DS_Store
+Madlib.dll
+Madlib.h
+Madlib.lib
