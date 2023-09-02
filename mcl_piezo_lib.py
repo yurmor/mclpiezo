@@ -5,8 +5,11 @@ import numpy as np
 
 class Madpiezo():
 	def __init__(self):
-		# provide valid path to Madlib.dll. Madlib.h and Madlib.lib should also be in the same folder
-		path_to_dll = 'Madlib.dll'
+		# Provide valid path to Madlib.dll. Madlib.h and Madlib.lib should
+		# also be in the same folder. In its present form, just copy 
+		# Madlib.dll, Madlib.h and Madlib.lib to the same folder as this
+		# module.
+		path_to_dll = './Madlib.dll'
 		self.madlib = cdll.LoadLibrary(path_to_dll)
 		self.handler = self.mcl_start()
 		atexit.register(self.mcl_close)
@@ -109,3 +112,4 @@ if __name__ == "__main__":
 		
 		print("Current position x,y,z = ", piezo.get_position())
 	
+	piezo.mcl_close()
